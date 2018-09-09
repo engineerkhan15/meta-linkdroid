@@ -1,0 +1,29 @@
+From ca8d6ae255e25cf8f2234ea08f305ef8d9d540bd Mon Sep 17 00:00:00 2001
+From: MOHAMMAD RASIM <mohammad.rasim96@gmail.com>
+Date: Sat, 11 Aug 2018 15:43:53 +0300
+Subject: [PATCH] force amlvsink to be used for playing
+
+---
+ servicemp3/servicemp3.cpp | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/servicemp3/servicemp3.cpp b/servicemp3/servicemp3.cpp
+index 2ba89e8..aa44f99 100644
+--- a/servicemp3/servicemp3.cpp
++++ b/servicemp3/servicemp3.cpp
+@@ -617,6 +617,12 @@ eServiceMP3::eServiceMP3(eServiceReference ref):
+ #endif
+ 	if ( m_gst_playbin )
+ 	{
++	/*
++	*test forcing aml-video-sink
++	*/
++		videoSink = gst_element_factory_make("amlvsink", "GstDVBVideoSink");
++		g_object_set (m_gst_playbin, "video-sink", videoSink, NULL);
++		eDebug("setting video-sink=amlvsink");
+ 		/*
+ 		 * avoid video conversion, let the dvbmediasink handle that using native video flag
+ 		 * volume control is done by hardware, do not use soft volume flag
+-- 
+2.17.1
+

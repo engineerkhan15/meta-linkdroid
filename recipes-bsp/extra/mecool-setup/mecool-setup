@@ -1,0 +1,7 @@
+/usr/bin/remotecfg /etc/amremote/remote.conf
+echo "ts0" > /sys/class/stb/source
+echo "ts0" > /sys/class/stb/demux0_source
+echo "ts0" > /sys/class/stb/demux1_source
+echo "ts0" > /sys/class/stb/demux2_source
+ln -s /dev/fb0 /dev/fb2
+ln -s /dev/fb/0 /dev/fb/2

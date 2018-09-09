@@ -1,0 +1,49 @@
+force_fsck() {
+  echo "Filesystem corruption has been detected!"
+  echo "To prevent an automatic repair attempt continuing,"
+  echo "press any key or power off your system within the next 120 seconds"
+  echo ""
+  read -t120 -n1
+  # The exit status is 0 if input is available
+  # The exit status is greater than 128 if the timeout is exceeded
+  if [ "$?" -ne "0" -o "$?" -gt "128" ] ; then
+    echo "Repairing filesystem..."
+    echo ""
+    /sbin/e2fsck -T -M -y $root
+    FSCK_RET="$?"
+    if [ "$(( $FSCK_RET & 8 ))" = 8 ] ; then
+      # fubar
+      echo "Forced fsck failed. Your system is broken beyond repair"
+      echo "Please re-install Openpli"
+      echo ""
+      echo "Press enter to shutdown now"
+      echo ""
+      read fubar
+      poweroff
+    fi
+    reboot
+  else
+    echo "Shutting down..."
+    sleep 5
+    sync
+    poweroff
+  fi
+}
+
+check_disks() {
+    echo "Checking disk(s): $root"
+    /sbin/e2fsck -T -M -p -a $root > /dev/null 2>&1
+    FSCK_RET="$?"
+
+    # FSCK_RET is the bit-wise OR of the exit codes for each filesystem that is checked.
+    if [ "$(( $FSCK_RET & 4 ))" = 4 ] ; then
+      # errors left
+      force_fsck
+    elif [ "$(( $FSCK_RET & 1 ))" = 1 ] ; then
+      # filesystem errors corrected
+      echo "Filesystem errors corrected , continuing..."
+    elif [ "$(( $FSCK_RET & 0 ))" = 0 ] ; then
+      # no errors found
+      echo "No filesystem errors found, continuing..."
+    fi
+}

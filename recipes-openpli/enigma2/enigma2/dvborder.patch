@@ -1,0 +1,12 @@
+diff -Naur enigma2-PLi/lib/python/Components/UsageConfig.py enigma2-PersianPrince/lib/python/Components/UsageConfig.py
+--- enigma2-PLi/lib/python/Components/UsageConfig.py	2018-08-12 13:51:13.000000000 +0430
++++ enigma2-PersianPrince/lib/python/Components/UsageConfig.py	2018-08-13 14:03:56.528847802 +0430
+@@ -215,7 +215,7 @@
+ 		choicelist.append((str(i), ngettext("%d minute", "%d minutes", m) % m))
+ 	config.usage.timeshift_start_delay = ConfigSelection(default = "0", choices = choicelist)
+ 
+-	config.usage.alternatives_priority = ConfigSelection(default = "0", choices = [
++	config.usage.alternatives_priority = ConfigSelection(default = "5", choices = [
+ 		("0", "DVB-S/-C/-T"),
+ 		("1", "DVB-S/-T/-C"),
+ 		("2", "DVB-C/-S/-T"),
