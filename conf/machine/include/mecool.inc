@@ -47,6 +47,7 @@ MACHINE_ESSENTIAL_EXTRA_RDEPENDS += "\
     kernel-modules \
     amremote \
     mecool-e2-procfs \
+    kernel-module-e2-procfs \
     linkdroid-libavlib-audio-so-alien5 \
     libmad \
     kernel-module-aml \
