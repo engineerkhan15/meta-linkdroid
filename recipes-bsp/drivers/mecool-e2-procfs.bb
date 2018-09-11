@@ -16,7 +16,7 @@ SRC_URI = "git://github.com/PLi-metas/amlogic-e2-procfs.git;protocol=git"
 
 S = "${WORKDIR}/git/source/e2_procfs"
 
-inherit module
+inherit module machine_kernel_pr
 
 EXTRA_OEMAKE = "KSRC=${STAGING_KERNEL_BUILDDIR}"
 
