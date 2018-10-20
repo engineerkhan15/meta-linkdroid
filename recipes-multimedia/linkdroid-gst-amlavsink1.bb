@@ -6,6 +6,8 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
+PR = "r1"
+
 COMPATIBLE_MACHINE = "alien5|k1pro|k2pro|k2prov2|k3pro|k1plus"
 
 inherit lib_package pkgconfig
@@ -18,8 +20,8 @@ DEPENDS = " gstreamer1.0 linkdroid-libamcodec-alien5 linkdroid-libamavutils-alie
 
 SRC_URI = "https://raw.githubusercontent.com/PLi-metas/amlogic-libs/master/gst-aml-plugins-1.0.zip"
 
-SRC_URI[md5sum] = "335696a4b0e19f7528583fc31a6e654b"
-SRC_URI[sha256sum] = "6256d664654d182881782e10a10537f127decb5318f2c546a279f02082c0a82c"
+SRC_URI[md5sum] = "f19f8f4ee0b24989c06c891ed7f0369c"
+SRC_URI[sha256sum] = "7b62c12f1c8d63751c167101a6f566e22eb40929932af1c76edb51f192a99108"
 
 S = "${WORKDIR}/gst-aml-plugins-1.0"
 
