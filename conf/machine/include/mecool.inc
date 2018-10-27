@@ -48,20 +48,19 @@ MACHINE_ESSENTIAL_EXTRA_RDEPENDS += "\
     amremote \
     mecool-e2-procfs \
     kernel-module-e2-procfs \
-    linkdroid-libavlib-audio-so-alien5 \
-    libmad \
     kernel-module-aml \
     kernel-module-aml-fe \
     kernel-module-avl6862 \
     kernel-module-r848a \
+    kernel-module-dhd \
+    linkdroid-libavlib-audio-so-alien5 \
+    libmad \
     mecool-amlsetfb \
     mecool-setup \
     firmware-ap6xxx-mecool \
-    kernel-module-dhd \
     "
 
 KERNEL_MODULE_AUTOLOAD += "\
-    e2_procfs \
     mali \
     rfcomm \
     hidp \
@@ -71,11 +70,6 @@ KERNEL_MODULE_AUTOLOAD += "\
     mceusb \
     rc-core \
     cfg80211 \
-    aml \
-    aml_fe \
-    avl6862 \
-    r848a \
-    dhd \
 "
 
 MACHINE_ESSENTIAL_EXTRA_RRECOMMENDS += "\
