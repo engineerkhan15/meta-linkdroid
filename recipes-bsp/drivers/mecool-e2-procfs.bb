@@ -30,12 +30,12 @@ do_install() {
 	install -d ${D}${base_libdir}/modules/${KERNEL_VERSION}/drivers/amlogic/enigma2
 	install -m 0644 ${S}/e2_procfs.ko ${D}${base_libdir}/modules/${KERNEL_VERSION}/drivers/amlogic/enigma2/
 	install -d ${D}/${sysconfdir}/modules-load.d
-	echo e2_procfs >> ${D}/${sysconfdir}/modules-load.d/_${MACHINE}.conf
-	echo aml >> ${D}/${sysconfdir}/modules-load.d/_${MACHINE}.conf
-	echo aml_fe >> ${D}/${sysconfdir}/modules-load.d/_${MACHINE}.conf
-	echo avl6862 >> ${D}/${sysconfdir}/modules-load.d/_${MACHINE}.conf
-	echo r848a >> ${D}/${sysconfdir}/modules-load.d/_${MACHINE}.conf
-	echo dhd >> ${D}/${sysconfdir}/modules-load.d/_${MACHINE}.conf
+	echo "e2_procfs" > ${D}/${sysconfdir}/modules-load.d/_${MACHINE}.conf
+	echo "aml" >> ${D}/${sysconfdir}/modules-load.d/_${MACHINE}.conf
+	echo "aml_fe" >> ${D}/${sysconfdir}/modules-load.d/_${MACHINE}.conf
+	echo "avl6862" >> ${D}/${sysconfdir}/modules-load.d/_${MACHINE}.conf
+	echo "r848a" >> ${D}/${sysconfdir}/modules-load.d/_${MACHINE}.conf
+	echo "dhd" >> ${D}/${sysconfdir}/modules-load.d/_${MACHINE}.conf
 }
 
 FILES_${PN} += "${sysconfdir}/modules-load.d/_${MACHINE}.conf"
