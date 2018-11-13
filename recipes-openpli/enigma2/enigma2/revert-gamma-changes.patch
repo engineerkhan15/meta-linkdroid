@@ -1,0 +1,193 @@
+diff -Naur enigma2-PLi/lib/dvb/decoder.cpp enigma2-PersianPrince/lib/dvb/decoder.cpp
+--- enigma2-PLi/lib/dvb/decoder.cpp	2018-11-13 16:46:05.546210826 +0330
++++ enigma2-PersianPrince/lib/dvb/decoder.cpp	2018-11-13 16:46:54.611808216 +0330
+@@ -245,7 +245,7 @@
+ 
+ eDVBVideo::eDVBVideo(eDVBDemux *demux, int dev)
+ 	: m_demux(demux), m_dev(dev),
+-	m_width(-1), m_height(-1), m_framerate(-1), m_aspect(-1), m_progressive(-1), m_gamma(-1)
++	m_width(-1), m_height(-1), m_framerate(-1), m_aspect(-1), m_progressive(-1)
+ {
+ 	char filename[128];
+ 	sprintf(filename, "/dev/dvb/adapter%d/video%d", demux ? demux->adapter : 0, dev);
+@@ -553,21 +553,6 @@
+ 				eDebugNoNewLine("PROGRESSIVE_CHANGED %d\n", m_progressive);
+ 				/* emit */ m_event(event);
+ 			}
+-			else if (evt.type == 17 /*VIDEO_EVENT_GAMMA_CHANGED*/)
+-			{
+-				struct iTSMPEGDecoder::videoEvent event;
+-				event.type = iTSMPEGDecoder::videoEvent::eventGammaChanged;
+-				/*
+-				 * Possible gamma values
+-				 * 0: Traditional gamma - SDR luminance range
+-				 * 1: Traditional gamma - HDR luminance range
+-				 * 2: SMPTE ST2084 (aka HDR10)
+-				 * 3: Hybrid Log-gamma
+-				 */
+-				m_gamma = event.gamma = evt.u.frame_rate;
+-				eDebugNoNewLine("GAMMA_CHANGED %d\n", m_gamma);
+-				/* emit */ m_event(event);
+-			}
+ 			else
+ 				eDebugNoNewLine("unhandled DVBAPI Video Event %d\n", evt.type);
+ 		}
+@@ -657,21 +642,6 @@
+ 	return m_framerate;
+ }
+ 
+-int eDVBVideo::getGamma()
+-{
+-	/* when closing the video device invalidates the attributes, we can rely on VIDEO_EVENTs */
+-	if (!m_close_invalidates_attributes)
+-	{
+-		if (m_gamma == -1)
+-		{
+-			char tmp[64];
+-			sprintf(tmp, "/proc/stb/vmpeg/%d/gamma", m_dev);
+-			CFile::parseIntHex(&m_gamma, tmp);
+-		}
+-	}
+-	return m_gamma;
+-}
+-
+ DEFINE_REF(eDVBPCR);
+ 
+ eDVBPCR::eDVBPCR(eDVBDemux *demux, int dev): m_demux(demux), m_dev(dev)
+@@ -1349,10 +1319,3 @@
+ 		return m_video->getAspect();
+ 	return -1;
+ }
+-
+-int eTSMPEGDecoder::getVideoGamma()
+-{
+-	if (m_video)
+-		return m_video->getGamma();
+-	return -1;
+-}
+diff -Naur enigma2-PLi/lib/dvb/decoder.h enigma2-PersianPrince/lib/dvb/decoder.h
+--- enigma2-PLi/lib/dvb/decoder.h	2018-11-13 16:46:05.546210826 +0330
++++ enigma2-PersianPrince/lib/dvb/decoder.h	2018-11-13 16:46:54.611808216 +0330
+@@ -37,7 +37,7 @@
+ 	ePtr<eSocketNotifier> m_sn;
+ 	void video_event(int what);
+ 	sigc::signal1<void, struct iTSMPEGDecoder::videoEvent> m_event;
+-	int m_width, m_height, m_framerate, m_aspect, m_progressive, m_gamma;
++	int m_width, m_height, m_framerate, m_aspect, m_progressive;
+ 	static int readApiSize(int fd, int &xres, int &yres, int &aspect);
+ public:
+ 	enum { MPEG2, MPEG4_H264, VC1 = 3, MPEG4_Part2, VC1_SM, MPEG1, H265_HEVC, AVS = 16 };
+@@ -57,7 +57,6 @@
+ 	int getProgressive();
+ 	int getFrameRate();
+ 	int getAspect();
+-	int getGamma();
+ };
+ 
+ class eDVBPCR: public iObject
+@@ -174,7 +173,6 @@
+ 	int getVideoProgressive();
+ 	int getVideoFrameRate();
+ 	int getVideoAspect();
+-	int getVideoGamma();
+ 	static RESULT setHwPCMDelay(int delay);
+ 	static RESULT setHwAC3Delay(int delay);
+ };
+diff -Naur enigma2-PLi/lib/dvb/idvb.h enigma2-PersianPrince/lib/dvb/idvb.h
+--- enigma2-PLi/lib/dvb/idvb.h	2018-11-13 16:46:05.550210746 +0330
++++ enigma2-PersianPrince/lib/dvb/idvb.h	2018-11-13 16:46:54.615808507 +0330
+@@ -753,15 +753,13 @@
+ 		enum { eventUnknown = 0,
+ 			eventSizeChanged = VIDEO_EVENT_SIZE_CHANGED,
+ 			eventFrameRateChanged = VIDEO_EVENT_FRAME_RATE_CHANGED,
+-			eventProgressiveChanged = 16,
+-			eventGammaChanged = 17
++			eventProgressiveChanged = 16
+ 		} type;
+ 		unsigned char aspect;
+ 		unsigned short height;
+ 		unsigned short width;
+ 		bool progressive;
+ 		unsigned short framerate;
+-		unsigned short gamma;
+ 	};
+ 
+ 	virtual RESULT connectVideoEvent(const sigc::slot1<void, struct videoEvent> &event, ePtr<eConnection> &connection) = 0;
+@@ -771,7 +769,6 @@
+ 	virtual int getVideoProgressive() = 0;
+ 	virtual int getVideoFrameRate() = 0;
+ 	virtual int getVideoAspect() = 0;
+-	virtual int getVideoGamma() = 0;
+ };
+ 
+ #endif //SWIG
+diff -Naur enigma2-PLi/lib/python/Components/Converter/PliExtraInfo.py enigma2-PersianPrince/lib/python/Components/Converter/PliExtraInfo.py
+--- enigma2-PLi/lib/python/Components/Converter/PliExtraInfo.py	2018-11-13 16:46:05.698207795 +0330
++++ enigma2-PersianPrince/lib/python/Components/Converter/PliExtraInfo.py	2018-11-13 16:46:54.631809672 +0330
+@@ -152,8 +152,7 @@
+ 		yres = info.getInfo(iServiceInformation.sVideoHeight)
+ 		mode = ("i", "p", " ")[info.getInfo(iServiceInformation.sProgressive)]
+ 		fps  = str((info.getInfo(iServiceInformation.sFrameRate) + 500) / 1000)
+-		gamma = ("SDR", "HDR", "HDR10", "HLG", "")[info.getInfo(iServiceInformation.sGamma)]
+-		return str(xres) + "x" + str(yres) + mode + fps + addspace(gamma)
++		return str(xres) + "x" + str(yres) + mode + fps
+ 
+ 	def createVideoCodec(self, info):
+ 		return codec_data.get(info.getInfo(iServiceInformation.sVideoType), "N/A")
+diff -Naur enigma2-PLi/lib/python/Screens/ServiceInfo.py enigma2-PersianPrince/lib/python/Screens/ServiceInfo.py
+--- enigma2-PLi/lib/python/Screens/ServiceInfo.py	2018-11-13 16:46:05.806205642 +0330
++++ enigma2-PersianPrince/lib/python/Screens/ServiceInfo.py	2018-11-13 16:46:54.783820741 +0330
+@@ -152,9 +152,6 @@
+ 					aspect = self.getServiceInfoValue(iServiceInformation.sAspect)
+ 					aspect = aspect in ( 1, 2, 5, 6, 9, 0xA, 0xD, 0xE ) and "4:3" or "16:9"
+ 					resolution += " - ["+aspect+"]"
+-				gamma = ("SDR", "HDR", "HDR10", "HLG", "")[self.info.getInfo(iServiceInformation.sGamma)]
+-				if gamma:
+-					resolution += " - " + gamma
+ 			if "%3a//" in refstr and reftype not in (1,257,4098,4114):
+ 				fillList = [(_("Service name"), name, TYPE_TEXT),
+ 					(_("Videocodec, size & format"), resolution, TYPE_TEXT),
+diff -Naur enigma2-PLi/lib/service/iservice.h enigma2-PersianPrince/lib/service/iservice.h
+--- enigma2-PLi/lib/service/iservice.h	2018-11-13 16:46:05.810205562 +0330
++++ enigma2-PersianPrince/lib/service/iservice.h	2018-11-13 16:46:54.791821323 +0330
+@@ -392,8 +392,6 @@
+ 		sIsDedicated3D,
+ 		sCenterDVBSubs,
+ 
+-		sGamma,
+-
+ 		sUser = 0x100
+ 	};
+ 	enum {
+@@ -932,8 +930,6 @@
+ 
+ 		evHBBTVInfo,
+ 
+-		evVideoGammaChanged,
+-
+ 		evUser = 0x100
+ 	};
+ };
+diff -Naur enigma2-PLi/lib/service/servicedvb.cpp enigma2-PersianPrince/lib/service/servicedvb.cpp
+--- enigma2-PLi/lib/service/servicedvb.cpp	2018-11-13 16:46:05.854204685 +0330
++++ enigma2-PersianPrince/lib/service/servicedvb.cpp	2018-11-13 16:46:54.791821323 +0330
+@@ -1919,9 +1919,6 @@
+ 			return aspect;
+ 		break;
+ 	}
+-	case sGamma:
+-		if (m_decoder) return m_decoder->getVideoGamma();
+-		break;
+ 	case sIsCrypted:
+ 		if (no_program_info) return false;
+ 		return program.isCrypted();
+@@ -3555,9 +3552,6 @@
+ 		case iTSMPEGDecoder::videoEvent::eventProgressiveChanged:
+ 			m_event((iPlayableService*)this, evVideoProgressiveChanged);
+ 			break;
+-		case iTSMPEGDecoder::videoEvent::eventGammaChanged:
+-			m_event((iPlayableService*)this, evVideoGammaChanged);
+-			break;
+ 		default:
+ 			break;
+ 	}

@@ -116,5 +116,3 @@ IMAGE_CMD_amlogicsdimg_append = "\
 
 # We know about rtc
 include conf/machine/include/build-extras.inc
-
-include conf/machine/include/enigma2-setup.inc

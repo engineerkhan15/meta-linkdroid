@@ -1,0 +1,277 @@
+diff -Naur enigma2-PLi/lib/dvb/amldecoder.cpp enigma2-PersianPrince/lib/dvb/amldecoder.cpp
+--- enigma2-PLi/lib/dvb/amldecoder.cpp	2018-08-04 13:20:23.000000000 +0430
++++ enigma2-PersianPrince/lib/dvb/amldecoder.cpp	2018-08-06 13:38:00.518480530 +0430
+@@ -222,8 +222,15 @@
+ 				m_codec.video_type = VFORMAT_MPEG4; //maybe?
+ 				t = "MPEG4 Part2";
+ 				break;
++#if defined(__aarch64__)
++			case H265_HEVC:
++				m_codec.video_type = VFORMAT_HEVC; //maybe?
++				t = "H265 HEVC";
++				break;
++#endif
+ 		}
+ 		eDebug("[eAMLTSMPEGDecoder::setVideoPID] vpid=%d, type=%d %s", vpid, type, t.c_str());
++		aml_change_vpid(vpid, m_codec.video_type);
+ 	}
+ 	return 0;
+ }
+@@ -249,6 +256,10 @@
+ 				m_codec.audio_type = AFORMAT_AC3;
+ 				t = "AC3";
+ 				break;
++			case aDDP:
++				m_codec.audio_type = AFORMAT_AC3;
++				t = "AC3";
++				break;
+ 			case aAAC:
+ 				m_codec.audio_type = AFORMAT_AAC;
+ 				t = "AAC";
+diff -Naur enigma2-PLi/lib/dvb/amldecoder.h enigma2-PersianPrince/lib/dvb/amldecoder.h
+--- enigma2-PLi/lib/dvb/amldecoder.h	2018-08-04 13:20:23.000000000 +0430
++++ enigma2-PersianPrince/lib/dvb/amldecoder.h	2018-08-06 11:46:44.329339696 +0430
+@@ -89,7 +89,7 @@
+ 	void *adec_handle;
+ 
+ public:
+-	enum { aMPEG, aAC3, aDTS, aAAC, aAACHE, aLPCM, aDTSHD, aDDP, MPEG2 = 0, MPEG4_H264, MPEG1, MPEG4_Part2, VC1, VC1_SM };
++	enum { aMPEG, aAC3, aDTS, aAAC, aAACHE, aLPCM, aDTSHD, aDDP, MPEG2 = 0, MPEG4_H264, MPEG1, MPEG4_Part2, VC1, VC1_SM, H265_HEVC };
+ 	enum { pidNone = -1 };
+ 	eAMLTSMPEGDecoder(eDVBDemux *demux, int decoder);
+ 	virtual ~eAMLTSMPEGDecoder();
+diff -Naur enigma2-PLi/lib/dvb/frontend.cpp enigma2-PersianPrince/lib/dvb/frontend.cpp
+--- enigma2-PLi/lib/dvb/frontend.cpp	2018-08-04 13:20:23.000000000 +0430
++++ enigma2-PersianPrince/lib/dvb/frontend.cpp	2018-08-06 13:40:05.322311777 +0430
+@@ -18,6 +18,19 @@
+ #define I2C_SLAVE_FORCE	0x0706
+ #endif
+ 
++#define ioctlMeasureStart \
++	struct timeval start, end; \
++	int duration; \
++	gettimeofday(&start, NULL);
++
++#define ioctlMeasureEval(x) \
++	do { \
++		gettimeofday(&end, NULL); \
++		duration = (((end.tv_usec - start.tv_usec)/1000) + 1000 ) % 1000; \
++		if (duration>35) \
++			eWarning("[eDVBFrontend] Slow ioctl '%s', potential driver issue, %dms",x,duration); \
++} while(0)
++
+ #define eDebugNoSimulate(x...) \
+ 	do { \
+ 		if (!m_simulate) \
+@@ -547,6 +560,7 @@
+ 	:m_simulate(simulate), m_enabled(false), m_fbc(false), m_simulate_fe(simulate_fe), m_type(-1), m_dvbid(fe), m_slotid(fe)
+ 	,m_fd(-1), m_dvbversion(0), m_rotor_mode(false), m_need_rotor_workaround(false), m_multitype(false)
+ 	,m_state(stateClosed), m_timeout(0), m_tuneTimer(0)
++	,m_looptimeout(100)
+ {
+ 	m_filename = devicenodename;
+ 
+@@ -816,6 +830,7 @@
+ 		dvb_frontend_event event;
+ 		int res;
+ 		int state;
++		usleep(20000);
+ 		res = ::ioctl(m_fd, FE_GET_EVENT, &event);
+ 
+ 		if (res && (errno == EAGAIN))
+@@ -834,12 +849,19 @@
+ 			if (m_tuning) {
+ 				state = stateTuning;
+ 				if (event.status & FE_TIMEDOUT) {
+-					eDebug("[eDVBFrontend] FE_TIMEDOUT! ..abort");
+-					m_tuneTimer->stop();
+-					timeout();
+-					return;
++					if (m_looptimeout == 0){
++						eDebug("[eDVBFrontend] FE_TIMEDOUT! ..abort");
++						m_tuneTimer->stop();
++						timeout();
++						return;
++					}
++					else{
++						m_looptimeout--;
++					}
++				
+ 				}
+ 				++m_tuning;
++				break;
+ 			}
+ 			else
+ 			{
+@@ -847,6 +869,8 @@
+ 				state = stateLostLock;
+ 				if (!m_rotor_mode)
+ 					sec_fe->m_data[CSW] = sec_fe->m_data[UCSW] = sec_fe->m_data[TONEBURST] = -1; // reset diseqc
++				if(m_state == state)
++					break; /* I do not see any other way out */
+ 			}
+ 		}
+ 		if (m_state != state)
+@@ -1372,9 +1396,20 @@
+ 			fe_status_t status;
+ 			if (!m_simulate)
+ 			{
++				ioctlMeasureStart;
++				usleep(20000);
+ 				if ( ioctl(m_fd, FE_READ_STATUS, &status) < 0 && errno != ERANGE )
+ 					eDebug("[eDVBFrontend] FE_READ_STATUS failed: %m");
+-				return (int)status;
++				if (status & FE_TIMEDOUT) {
++					if (m_looptimeout == 0){
++						ioctlMeasureEval("FE_READ_STATUS");
++						return (int)status;
++					}
++					else{
++						m_looptimeout--;
++					}
++				
++				}
+ 			}
+ 			return (FE_HAS_SYNC | FE_HAS_LOCK);
+ 		}
+@@ -1771,18 +1806,34 @@
+ 					{
+ 						dvb_frontend_event event;
+ 						int res;
+-						res = ::ioctl(m_fd, FE_GET_EVENT, &event);
+-
+-						if (res && (errno == EAGAIN))
++						usleep(20000);
++						if((res = ::ioctl(m_fd, FE_READ_STATUS, &event.status)) != 0)
++						{
+ 							break;
+-
+-						if (event.status & FE_TIMEDOUT)
++						}
++						else
+ 						{
+-							eDebugNoSimulate("[eDVBFrontend] IF_LOCK_TIMEOUT_GOTO: got FE_TIMEDOUT");
+-							setSecSequencePos(m_sec_sequence.current()->steps);
+-							timeout = true;
++							if(event.status == 0)
++							{
++								break;
++							}
++						}
++						if (event.status & FE_TIMEDOUT) {
++							if (m_looptimeout == 0){
++								eDebugNoSimulate("[eDVBFrontend] IF_LOCK_TIMEOUT_GOTO: got FE_TIMEDOUT");
++								setSecSequencePos(m_sec_sequence.current()->steps);
++								timeout = true;
++								break;
++							}
++							else{
++								m_looptimeout--;
++							}
+ 							break;
+ 						}
++						if (event.status & FE_HAS_LOCK)
++						{
++							break; /* I do not see any other way out */
++						}
+ 					}
+ 					if (timeout) break;
+ 				}
+@@ -1975,6 +2026,7 @@
+ 		cmdseq.props = p;
+ 		cmdseq.num = 0;
+ 		p[cmdseq.num].cmd = DTV_CLEAR, cmdseq.num++;
++		m_looptimeout = 100;
+ 		if (type == iDVBFrontend::feSatellite)
+ 		{
+ 			eDVBFrontendParametersSatellite parm = {0};
+@@ -1983,7 +2035,12 @@
+ 			fe_modulation_t modulation = QPSK;
+ 			fe_delivery_system_t system = SYS_DVBS;
+ 			oparm.getDVBS(parm);
+-
++			if (parm.symbol_rate < 5000000)
++		        m_looptimeout = 250;
++			else if (parm.symbol_rate < 10000000)
++		        m_looptimeout = 60;
++			else
++		        m_looptimeout = 50;
+ 			switch (parm.system)
+ 			{
+ 				default:
+@@ -2058,7 +2115,7 @@
+ 		{
+ 			eDVBFrontendParametersCable parm = {0};
+ 			oparm.getDVBC(parm);
+-
++			m_looptimeout = 300;
+ 			p[cmdseq.num].cmd = DTV_DELIVERY_SYSTEM;
+ #if DVB_API_VERSION > 5 || DVB_API_VERSION == 5 && DVB_API_VERSION_MINOR >= 6
+ 			if (m_dvbversion >= DVB_VERSION(5, 6))
+@@ -2129,6 +2186,7 @@
+ 			eDVBFrontendParametersTerrestrial parm = {0};
+ 			fe_delivery_system_t system = SYS_DVBT;
+ 			oparm.getDVBT(parm);
++			m_looptimeout = 100;
+ 			switch (parm.system)
+ 			{
+ 				default:
+diff -Naur enigma2-PLi/lib/dvb/frontend.h enigma2-PersianPrince/lib/dvb/frontend.h
+--- enigma2-PLi/lib/dvb/frontend.h	2018-08-04 13:20:23.000000000 +0430
++++ enigma2-PersianPrince/lib/dvb/frontend.h	2018-08-06 13:40:23.157735134 +0430
+@@ -80,6 +80,7 @@
+ 	bool m_fbc;
+ 	eDVBFrontend *m_simulate_fe; // only used to set frontend type in dvb.cpp
+ 	int m_type;
++	int m_looptimeout;
+ 	int m_dvbid;
+ 	int m_slotid;
+ 	int m_fd;
+diff -Naur enigma2-PLi/lib/service/servicedvb.cpp enigma2-PersianPrince/lib/service/servicedvb.cpp
+--- enigma2-PLi/lib/service/servicedvb.cpp	2018-08-04 13:20:23.000000000 +0430
++++ enigma2-PersianPrince/lib/service/servicedvb.cpp	2018-08-06 13:40:47.844944025 +0430
+@@ -38,6 +38,10 @@
+ #include <sstream>
+ #include <iomanip>
+ 
++extern "C" {
++#include <codec.h>
++}
++
+ class eStaticServiceDVBInformation: public iStaticServiceInformation
+ {
+ 	DECLARE_REF(eStaticServiceDVBInformation);
+@@ -1368,6 +1372,12 @@
+ 		type = eDVBServicePMTHandler::streamclient;
+ 	}
+ 
++	if(m_is_stream || m_is_pvr)
++	{
++			eDebug("[eDVBServicePlay] start m_is_pvr %d", m_is_pvr);
++			aml_set_demux2_source();
++	}
++
+ 	m_first_program_info = 1;
+ 	ePtr<iTsSource> source = createTsSource(service, packetsize);
+ 	m_service_handler.tuneExt(service, source, service.path.c_str(), m_cue, false, m_dvb_service, type, scrambled);
+diff --git a/lib/dvb/demux.cpp b/lib/dvb/demux.cpp
+index 44dc2ee45..6b7e12fb4 100644
+--- a/lib/dvb/demux.cpp
++++ b/lib/dvb/demux.cpp
+@@ -111,8 +111,15 @@ RESULT eDVBDemux::setSourceFrontend(int fenum)
+ 	if (fd < 0) return -1;
+ 	int n = DMX_SOURCE_FRONT0 + fenum;
+ 	int res = ::ioctl(fd, DMX_SET_SOURCE, &n);
+-	if (res)
++	if (res){
+ 		eDebug("[eDVBDemux] DMX_SET_SOURCE Frontend%d failed: %m", fenum);
++		/** FIXME: gg begin dirty hack  */
++		eDebug("[eDVBDemux] Ignoring due to limitation to one frontend for each adapter and missing ioctl....");
++		source = fenum;
++		res = 0;
++		/** FIXME: gg end dirty hack  */
++	}
++
+ 	else
+ 		source = fenum;
+ 	::close(fd);
