@@ -39,7 +39,6 @@ MACHINE_ESSENTIAL_EXTRA_RDEPENDS += "\
     amlogic-autoscript \
     linkdroid-mali-alien5 \
     linkdroid-gst-amlavsink1 \
-    linkdroid-gst-app \
     linkdroid-libamplayer-alien5 \
     linkdroid-libamavutils-alien5 \
     linkdroid-libamadec-alien5 \
