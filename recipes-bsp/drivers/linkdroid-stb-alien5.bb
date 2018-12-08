@@ -9,7 +9,7 @@ COMPATIBLE_MACHINE = "(alien5|k1pro|k2pro|k2prov2|k3pro|k1plus)"
 DEPENDS = "virtual/${TARGET_PREFIX}gcc"
 
 KV = "3.14.29"
-SRCDATE = "20180905"
+SRCDATE = "20181205"
 
 PV = "${KV}+${SRCDATE}"
 
