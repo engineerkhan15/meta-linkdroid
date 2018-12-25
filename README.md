@@ -1,2 +1,2 @@
 # meta-linkdroid
-LinkDroid BSP layer for PLi's OE
+LinkDroid BSP layer for Open Vision
