@@ -1,7 +1,8 @@
-diff -Naur enigma2-PLi/lib/dvb/decoder.cpp enigma2-PersianPrince/lib/dvb/decoder.cpp
---- enigma2-PLi/lib/dvb/decoder.cpp	2018-11-13 16:46:05.546210826 +0330
-+++ enigma2-PersianPrince/lib/dvb/decoder.cpp	2018-11-13 16:46:54.611808216 +0330
-@@ -245,7 +245,7 @@
+diff --git a/lib/dvb/decoder.cpp b/lib/dvb/decoder.cpp
+index 8fc1faee3..3fdc9e6ec 100644
+--- a/lib/dvb/decoder.cpp
++++ b/lib/dvb/decoder.cpp
+@@ -246,7 +246,7 @@ int eDVBVideo::m_close_invalidates_attributes = -1;
  
  eDVBVideo::eDVBVideo(eDVBDemux *demux, int dev)
  	: m_demux(demux), m_dev(dev),
@@ -10,7 +11,7 @@ diff -Naur enigma2-PLi/lib/dvb/decoder.cpp enigma2-PersianPrince/lib/dvb/decoder
  {
  	char filename[128];
  	sprintf(filename, "/dev/dvb/adapter%d/video%d", demux ? demux->adapter : 0, dev);
-@@ -553,21 +553,6 @@
+@@ -554,21 +554,6 @@ void eDVBVideo::video_event(int)
  				eDebugNoNewLine("PROGRESSIVE_CHANGED %d\n", m_progressive);
  				/* emit */ m_event(event);
  			}
@@ -32,7 +33,7 @@ diff -Naur enigma2-PLi/lib/dvb/decoder.cpp enigma2-PersianPrince/lib/dvb/decoder
  			else
  				eDebugNoNewLine("unhandled DVBAPI Video Event %d\n", evt.type);
  		}
-@@ -657,21 +642,6 @@
+@@ -658,21 +643,6 @@ int eDVBVideo::getFrameRate()
  	return m_framerate;
  }
  
@@ -54,7 +55,7 @@ diff -Naur enigma2-PLi/lib/dvb/decoder.cpp enigma2-PersianPrince/lib/dvb/decoder
  DEFINE_REF(eDVBPCR);
  
  eDVBPCR::eDVBPCR(eDVBDemux *demux, int dev): m_demux(demux), m_dev(dev)
-@@ -1349,10 +1319,3 @@
+@@ -1350,10 +1320,3 @@ int eTSMPEGDecoder::getVideoAspect()
  		return m_video->getAspect();
  	return -1;
  }
@@ -65,10 +66,11 @@ diff -Naur enigma2-PLi/lib/dvb/decoder.cpp enigma2-PersianPrince/lib/dvb/decoder
 -		return m_video->getGamma();
 -	return -1;
 -}
-diff -Naur enigma2-PLi/lib/dvb/decoder.h enigma2-PersianPrince/lib/dvb/decoder.h
---- enigma2-PLi/lib/dvb/decoder.h	2018-11-13 16:46:05.546210826 +0330
-+++ enigma2-PersianPrince/lib/dvb/decoder.h	2018-11-13 16:46:54.611808216 +0330
-@@ -37,7 +37,7 @@
+diff --git a/lib/dvb/decoder.h b/lib/dvb/decoder.h
+index ac5a8fc75..8ed600d09 100644
+--- a/lib/dvb/decoder.h
++++ b/lib/dvb/decoder.h
+@@ -37,7 +37,7 @@ private:
  	ePtr<eSocketNotifier> m_sn;
  	void video_event(int what);
  	sigc::signal1<void, struct iTSMPEGDecoder::videoEvent> m_event;
@@ -77,7 +79,7 @@ diff -Naur enigma2-PLi/lib/dvb/decoder.h enigma2-PersianPrince/lib/dvb/decoder.h
  	static int readApiSize(int fd, int &xres, int &yres, int &aspect);
  public:
  	enum { MPEG2, MPEG4_H264, VC1 = 3, MPEG4_Part2, VC1_SM, MPEG1, H265_HEVC, AVS = 16 };
-@@ -57,7 +57,6 @@
+@@ -57,7 +57,6 @@ public:
  	int getProgressive();
  	int getFrameRate();
  	int getAspect();
@@ -85,7 +87,7 @@ diff -Naur enigma2-PLi/lib/dvb/decoder.h enigma2-PersianPrince/lib/dvb/decoder.h
  };
  
  class eDVBPCR: public iObject
-@@ -174,7 +173,6 @@
+@@ -174,7 +173,6 @@ public:
  	int getVideoProgressive();
  	int getVideoFrameRate();
  	int getVideoAspect();
@@ -93,10 +95,11 @@ diff -Naur enigma2-PLi/lib/dvb/decoder.h enigma2-PersianPrince/lib/dvb/decoder.h
  	static RESULT setHwPCMDelay(int delay);
  	static RESULT setHwAC3Delay(int delay);
  };
-diff -Naur enigma2-PLi/lib/dvb/idvb.h enigma2-PersianPrince/lib/dvb/idvb.h
---- enigma2-PLi/lib/dvb/idvb.h	2018-11-13 16:46:05.550210746 +0330
-+++ enigma2-PersianPrince/lib/dvb/idvb.h	2018-11-13 16:46:54.615808507 +0330
-@@ -753,15 +753,13 @@
+diff --git a/lib/dvb/idvb.h b/lib/dvb/idvb.h
+index 6d26a44bd..afbb32ef7 100644
+--- a/lib/dvb/idvb.h
++++ b/lib/dvb/idvb.h
+@@ -753,15 +753,13 @@ public:
  		enum { eventUnknown = 0,
  			eventSizeChanged = VIDEO_EVENT_SIZE_CHANGED,
  			eventFrameRateChanged = VIDEO_EVENT_FRAME_RATE_CHANGED,
@@ -113,7 +116,7 @@ diff -Naur enigma2-PLi/lib/dvb/idvb.h enigma2-PersianPrince/lib/dvb/idvb.h
  	};
  
  	virtual RESULT connectVideoEvent(const sigc::slot1<void, struct videoEvent> &event, ePtr<eConnection> &connection) = 0;
-@@ -771,7 +769,6 @@
+@@ -771,7 +769,6 @@ public:
  	virtual int getVideoProgressive() = 0;
  	virtual int getVideoFrameRate() = 0;
  	virtual int getVideoAspect() = 0;
@@ -121,10 +124,11 @@ diff -Naur enigma2-PLi/lib/dvb/idvb.h enigma2-PersianPrince/lib/dvb/idvb.h
  };
  
  #endif //SWIG
-diff -Naur enigma2-PLi/lib/python/Components/Converter/PliExtraInfo.py enigma2-PersianPrince/lib/python/Components/Converter/PliExtraInfo.py
---- enigma2-PLi/lib/python/Components/Converter/PliExtraInfo.py	2018-11-13 16:46:05.698207795 +0330
-+++ enigma2-PersianPrince/lib/python/Components/Converter/PliExtraInfo.py	2018-11-13 16:46:54.631809672 +0330
-@@ -152,8 +152,7 @@
+diff --git a/lib/python/Components/Converter/PliExtraInfo.py b/lib/python/Components/Converter/PliExtraInfo.py
+index 8d5a9b5ef..29f0fcc0d 100644
+--- a/lib/python/Components/Converter/PliExtraInfo.py
++++ b/lib/python/Components/Converter/PliExtraInfo.py
+@@ -152,8 +152,7 @@ class PliExtraInfo(Poll, Converter, object):
  		yres = info.getInfo(iServiceInformation.sVideoHeight)
  		mode = ("i", "p", " ")[info.getInfo(iServiceInformation.sProgressive)]
  		fps  = str((info.getInfo(iServiceInformation.sFrameRate) + 500) / 1000)
@@ -134,23 +138,25 @@ diff -Naur enigma2-PLi/lib/python/Components/Converter/PliExtraInfo.py enigma2-P
  
  	def createVideoCodec(self, info):
  		return codec_data.get(info.getInfo(iServiceInformation.sVideoType), "N/A")
-diff -Naur enigma2-PLi/lib/python/Screens/ServiceInfo.py enigma2-PersianPrince/lib/python/Screens/ServiceInfo.py
---- enigma2-PLi/lib/python/Screens/ServiceInfo.py	2018-11-13 16:46:05.806205642 +0330
-+++ enigma2-PersianPrince/lib/python/Screens/ServiceInfo.py	2018-11-13 16:46:54.783820741 +0330
-@@ -152,9 +152,6 @@
+diff --git a/lib/python/Screens/ServiceInfo.py b/lib/python/Screens/ServiceInfo.py
+index ec75b99e5..13b52ef8d 100644
+--- a/lib/python/Screens/ServiceInfo.py
++++ b/lib/python/Screens/ServiceInfo.py
+@@ -153,9 +153,6 @@ class ServiceInfo(Screen):
  					aspect = self.getServiceInfoValue(iServiceInformation.sAspect)
  					aspect = aspect in ( 1, 2, 5, 6, 9, 0xA, 0xD, 0xE ) and "4:3" or "16:9"
  					resolution += " - ["+aspect+"]"
 -				gamma = ("SDR", "HDR", "HDR10", "HLG", "")[self.info.getInfo(iServiceInformation.sGamma)]
 -				if gamma:
 -					resolution += " - " + gamma
+ 			self.service = self.session.nav.getCurrentService()
  			if "%3a//" in refstr and reftype not in (1,257,4098,4114):
- 				fillList = [(_("Service name"), name, TYPE_TEXT),
- 					(_("Videocodec, size & format"), resolution, TYPE_TEXT),
-diff -Naur enigma2-PLi/lib/service/iservice.h enigma2-PersianPrince/lib/service/iservice.h
---- enigma2-PLi/lib/service/iservice.h	2018-11-13 16:46:05.810205562 +0330
-+++ enigma2-PersianPrince/lib/service/iservice.h	2018-11-13 16:46:54.791821323 +0330
-@@ -392,8 +392,6 @@
+ 			#IPTV 4097 5001, no PIDs shown
+diff --git a/lib/service/iservice.h b/lib/service/iservice.h
+index e5bb2666e..fd031b788 100644
+--- a/lib/service/iservice.h
++++ b/lib/service/iservice.h
+@@ -392,8 +392,6 @@ public:
  		sIsDedicated3D,
  		sCenterDVBSubs,
  
@@ -159,7 +165,7 @@ diff -Naur enigma2-PLi/lib/service/iservice.h enigma2-PersianPrince/lib/service/
  		sUser = 0x100
  	};
  	enum {
-@@ -932,8 +930,6 @@
+@@ -932,8 +930,6 @@ public:
  
  		evHBBTVInfo,
  
@@ -168,10 +174,11 @@ diff -Naur enigma2-PLi/lib/service/iservice.h enigma2-PersianPrince/lib/service/
  		evUser = 0x100
  	};
  };
-diff -Naur enigma2-PLi/lib/service/servicedvb.cpp enigma2-PersianPrince/lib/service/servicedvb.cpp
---- enigma2-PLi/lib/service/servicedvb.cpp	2018-11-13 16:46:05.854204685 +0330
-+++ enigma2-PersianPrince/lib/service/servicedvb.cpp	2018-11-13 16:46:54.791821323 +0330
-@@ -1919,9 +1919,6 @@
+diff --git a/lib/service/servicedvb.cpp b/lib/service/servicedvb.cpp
+index d1118ad7f..fb730fc88 100644
+--- a/lib/service/servicedvb.cpp
++++ b/lib/service/servicedvb.cpp
+@@ -1919,9 +1919,6 @@ int eDVBServicePlay::getInfo(int w)
  			return aspect;
  		break;
  	}
@@ -181,7 +188,7 @@ diff -Naur enigma2-PLi/lib/service/servicedvb.cpp enigma2-PersianPrince/lib/serv
  	case sIsCrypted:
  		if (no_program_info) return false;
  		return program.isCrypted();
-@@ -3555,9 +3552,6 @@
+@@ -3562,9 +3559,6 @@ void eDVBServicePlay::video_event(struct iTSMPEGDecoder::videoEvent event)
  		case iTSMPEGDecoder::videoEvent::eventProgressiveChanged:
  			m_event((iPlayableService*)this, evVideoProgressiveChanged);
  			break;
