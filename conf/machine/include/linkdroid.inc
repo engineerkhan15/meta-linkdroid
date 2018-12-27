@@ -30,7 +30,7 @@ UBOOT_LOADADDRESS = "0x01080000"
 
 INITRAMFS_IMAGE = "amlogic-initramfs"
 
-MACHINE_FEATURES = "bluetooth usbhost vfat alsa dvb-c nolcd hdmicec fb emmc linkdroid-pli"
+MACHINE_FEATURES = "bluetooth usbhost vfat alsa dvb-c nolcd hdmicec fb emmc linkdroid-pli nogamma"
 
 DVBPROVIDER = "kernel"
 DVBSKYPROVIDER = "kernel"
