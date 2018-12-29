@@ -20,7 +20,7 @@ MACHINE_KERNEL_PR_append = ".14"
 
 DTS = "${@ d.getVar('KERNEL_DEVICETREE').replace('.dtb','.dts') }"
 
-SRC_URI = "https://github.com/PLi-metas/linux-amlogic/archive/amlogic-3.14-nougat.tar.gz \
+SRC_URI = "https://github.com/OpenVisionE2/linux-amlogic/archive/amlogic-3.14-nougat.tar.gz \
   file://defconfig \
   file://persianprince.patch \
   file://${DTS} \

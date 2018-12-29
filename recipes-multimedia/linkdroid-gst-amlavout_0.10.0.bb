@@ -21,7 +21,7 @@ inherit autotools pkgconfig
 DEPENDS = "gstreamer linkdroid-gst-amlavsink linkdroid-libamcodec-alien5 linkdroid-libamavutils-alien5 linkdroid-libamplayer-alien5"
 RDEPENDS_{PN} = "linkdroid-libamavutils-alien5"
 
-SRC_URI = "https://raw.githubusercontent.com/PLi-metas/amlogic-libs/master/gst-aml-plugins-0.10.0-linkdroid.zip"
+SRC_URI = "https://raw.githubusercontent.com/OpenVisionE2/amlogic-libs/master/gst-aml-plugins-0.10.0-linkdroid.zip"
 
 SRC_URI[md5sum] = "907c4f49be34ee0b16b3de28ea2c5ca9"
 SRC_URI[sha256sum] = "a450ff9607b5e99ad8e29bcd0288570492f1fefa08765100358795fffa55f535"

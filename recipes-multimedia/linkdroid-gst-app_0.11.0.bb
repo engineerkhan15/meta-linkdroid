@@ -8,7 +8,7 @@ COMPATIBLE_MACHINE = "alien5|k1pro|k2pro|k2prov2|k3pro|k1plus"
 
 DEPENDS = "gstreamer libffi zlib libxml2 glib-2.0"
 
-SRC_URI = "https://raw.githubusercontent.com/PLi-metas/amlogic-libs/master/gst-app-0.11.0.zip"
+SRC_URI = "https://raw.githubusercontent.com/OpenVisionE2/amlogic-libs/master/gst-app-0.11.0.zip"
 
 SRC_URI[md5sum] = "be89f67888854239ec4fea4dd6dcb10f"
 SRC_URI[sha256sum] = "13a2992f30db55eda6e3f655d6fb0635eb9a5976abb17cbd90761c29f07489d4"

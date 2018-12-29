@@ -18,7 +18,7 @@ inherit lib_package pkgconfig
 DEPENDS = " gstreamer1.0 linkdroid-libamcodec-alien5 linkdroid-libamavutils-alien5 gstreamer1.0-libav gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly"
 
 
-SRC_URI = "https://raw.githubusercontent.com/PLi-metas/amlogic-libs/master/gst-aml-plugins-1.0.zip"
+SRC_URI = "https://raw.githubusercontent.com/OpenVisionE2/amlogic-libs/master/gst-aml-plugins-1.0.zip"
 
 SRC_URI[md5sum] = "f19f8f4ee0b24989c06c891ed7f0369c"
 SRC_URI[sha256sum] = "7b62c12f1c8d63751c167101a6f566e22eb40929932af1c76edb51f192a99108"
