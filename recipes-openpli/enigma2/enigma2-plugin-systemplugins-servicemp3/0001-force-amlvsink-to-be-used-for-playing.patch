@@ -1,7 +1,8 @@
-diff -Naur servicemp3-PLi/servicemp3/servicemp3.cpp servicemp3-PersianPrince/servicemp3/servicemp3.cpp
---- servicemp3-PLi/servicemp3/servicemp3.cpp	2018-12-30 10:11:43.959849196 +0330
-+++ servicemp3-PersianPrince/servicemp3/servicemp3.cpp	2018-12-30 10:12:43.718669863 +0330
-@@ -623,6 +623,12 @@
+diff --git a/servicemp3/servicemp3.cpp b/servicemp3/servicemp3.cpp
+index 93e570e..11c2d81 100644
+--- a/servicemp3/servicemp3.cpp
++++ b/servicemp3/servicemp3.cpp
+@@ -623,6 +623,12 @@ eServiceMP3::eServiceMP3(eServiceReference ref):
  #endif
  	if ( m_gst_playbin )
  	{
@@ -14,3 +15,11 @@ diff -Naur servicemp3-PLi/servicemp3/servicemp3.cpp servicemp3-PersianPrince/ser
  		/*
  		 * avoid video conversion, let the dvbmediasink handle that using native video flag
  		 * volume control is done by hardware, do not use soft volume flag
+@@ -1295,7 +1301,6 @@ int eServiceMP3::getInfo(int w)
+ 	case sVideoWidth: return m_width;
+ 	case sFrameRate: return m_framerate;
+ 	case sProgressive: return m_progressive;
+-	case sGamma: return m_gamma;
+ 	case sAspect: return m_aspect;
+ 	case sTagTitle:
+ 	case sTagArtist:
