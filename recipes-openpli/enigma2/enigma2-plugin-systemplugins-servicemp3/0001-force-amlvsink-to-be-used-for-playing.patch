@@ -1,17 +1,7 @@
-From ca8d6ae255e25cf8f2234ea08f305ef8d9d540bd Mon Sep 17 00:00:00 2001
-From: MOHAMMAD RASIM <mohammad.rasim96@gmail.com>
-Date: Sat, 11 Aug 2018 15:43:53 +0300
-Subject: [PATCH] force amlvsink to be used for playing
-
----
- servicemp3/servicemp3.cpp | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/servicemp3/servicemp3.cpp b/servicemp3/servicemp3.cpp
-index 2ba89e8..aa44f99 100644
---- a/servicemp3/servicemp3.cpp
-+++ b/servicemp3/servicemp3.cpp
-@@ -617,6 +617,12 @@ eServiceMP3::eServiceMP3(eServiceReference ref):
+diff -Naur servicemp3-PLi/servicemp3/servicemp3.cpp servicemp3-PersianPrince/servicemp3/servicemp3.cpp
+--- servicemp3-PLi/servicemp3/servicemp3.cpp	2018-12-30 10:11:43.959849196 +0330
++++ servicemp3-PersianPrince/servicemp3/servicemp3.cpp	2018-12-30 10:12:43.718669863 +0330
+@@ -623,6 +623,12 @@
  #endif
  	if ( m_gst_playbin )
  	{
@@ -24,6 +14,3 @@ index 2ba89e8..aa44f99 100644
  		/*
  		 * avoid video conversion, let the dvbmediasink handle that using native video flag
  		 * volume control is done by hardware, do not use soft volume flag
--- 
-2.17.1
-
