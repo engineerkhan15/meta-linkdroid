@@ -1,5 +1,5 @@
 diff --git a/servicemp3/servicemp3.cpp b/servicemp3/servicemp3.cpp
-index 93e570e..11c2d81 100644
+index 93e570e..0072eab 100644
 --- a/servicemp3/servicemp3.cpp
 +++ b/servicemp3/servicemp3.cpp
 @@ -623,6 +623,12 @@ eServiceMP3::eServiceMP3(eServiceReference ref):
@@ -23,3 +23,16 @@ index 93e570e..11c2d81 100644
  	case sAspect: return m_aspect;
  	case sTagTitle:
  	case sTagArtist:
+@@ -2270,12 +2275,6 @@ void eServiceMP3::gstBusCall(GstMessage *msg)
+ 							if (strstr(eventname, "Changed"))
+ 								m_event((iPlayableService*)this, evVideoProgressiveChanged);
+ 						}
+-						else if (!strcmp(eventname, "eventGammaChanged"))
+-						{
+-							gst_structure_get_int (msgstruct, "gamma", &m_gamma);
+-							if (strstr(eventname, "Changed"))
+-								m_event((iPlayableService*)this, evVideoGammaChanged);
+-						}
+ 						else if (!strcmp(eventname, "redirect"))
+ 						{
+ 							const char *uri = gst_structure_get_string(msgstruct, "new-location");
