@@ -15,24 +15,3 @@ index 93e570e..0072eab 100644
  		/*
  		 * avoid video conversion, let the dvbmediasink handle that using native video flag
  		 * volume control is done by hardware, do not use soft volume flag
-@@ -1295,7 +1301,6 @@ int eServiceMP3::getInfo(int w)
- 	case sVideoWidth: return m_width;
- 	case sFrameRate: return m_framerate;
- 	case sProgressive: return m_progressive;
--	case sGamma: return m_gamma;
- 	case sAspect: return m_aspect;
- 	case sTagTitle:
- 	case sTagArtist:
-@@ -2270,12 +2275,6 @@ void eServiceMP3::gstBusCall(GstMessage *msg)
- 							if (strstr(eventname, "Changed"))
- 								m_event((iPlayableService*)this, evVideoProgressiveChanged);
- 						}
--						else if (!strcmp(eventname, "eventGammaChanged"))
--						{
--							gst_structure_get_int (msgstruct, "gamma", &m_gamma);
--							if (strstr(eventname, "Changed"))
--								m_event((iPlayableService*)this, evVideoGammaChanged);
--						}
- 						else if (!strcmp(eventname, "redirect"))
- 						{
- 							const char *uri = gst_structure_get_string(msgstruct, "new-location");
