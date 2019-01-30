@@ -1060,6 +1060,7 @@ CONFIG_GXBB_SUSPEND=y
 # AVL6862 dvb driver
 #
 CONFIG_AVL6862=y
+CONFIG_MESON_DVB=y
 
 #
 # Amlogic DVB driver
