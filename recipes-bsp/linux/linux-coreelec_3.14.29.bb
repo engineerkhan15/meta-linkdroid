@@ -17,7 +17,7 @@ S = "${WORKDIR}/linux-amlogic-amlogic-3.14-nougat"
 B = "${WORKDIR}/build"
 AMLDVBPATH = "${WORKDIR}/aml-dvb-aml-dvb-develop/drivers/media/platform"
 
-MACHINE_KERNEL_PR_append = ".18"
+MACHINE_KERNEL_PR_append = ".19"
 
 DTS = "${@ d.getVar('KERNEL_DEVICETREE').replace('.dtb','.dts') }"
 
@@ -28,10 +28,10 @@ SRC_URI = "https://github.com/OpenVisionE2/linux-amlogic/archive/amlogic-3.14-no
   file://${DTS} \
 "
 
-SRC_URI[kernel.md5sum] = "a00c350ba9c5975f13d9b2e198ef6d30"
-SRC_URI[kernel.sha256sum] = "f40e555715a99f0ced49c68cb8b6a4135d1637887eee8ecf9da97a49503d8198"
-SRC_URI[amldvb.md5sum] = "299f51570eee471c6856287554b31ddc"
-SRC_URI[amldvb.sha256sum] = "b0675b616207964656121bed627cf2ad57ca4348e21dd16dfe86a276f1a174a8"
+SRC_URI[kernel.md5sum] = "4f3a2790f4052b7defa22b3746cbc193"
+SRC_URI[kernel.sha256sum] = "50c0c5ffd993764dfe80a88e3d720a87a72840289c6c8cfbf6bcf5696be6fe80"
+SRC_URI[amldvb.md5sum] = "1b3ecd4128461548530328b45724c835"
+SRC_URI[amldvb.sha256sum] = "119e3727807f51f3ee1fb87e83dbe24d4988504959e3b4713afff17845e9ec6d"
 
 do_configure_prepend(){
     sed -i "s/@DISTRONAME@/${MACHINE}/" "${WORKDIR}/defconfig"
