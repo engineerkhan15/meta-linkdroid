@@ -3,7 +3,7 @@ DESCRIPTION = "Provides basic set-up for the amlogic framebuffer"
 SECTION = "base"
 include conf/license/license-gplv2.inc
 
-COMPATIBLE_MACHINE = "k1pro|k2pro|k2prov2|k3pro|k1plus"
+COMPATIBLE_MACHINE = "k1pro|k2pro|k2prov2|k3pro|k1plus|kvim2"
 
 PR = "r6"
 
